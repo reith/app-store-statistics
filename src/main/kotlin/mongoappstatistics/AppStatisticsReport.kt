@@ -7,14 +7,24 @@ import kotlin.collections.ArrayList
 
 import com.ibm.icu.util.Calendar
 import com.ibm.icu.util.ULocale
+import org.springframework.cache.annotation.Cacheable
+import java.io.Serializable
 
-data class AppStatisticsWeeklyReport(
+
+
+data class AppStatisticsWeeklyReport (
         val weekNum: Int,
         val year: Int,
         var requests: Int,
         var clicks: Int,
         var installs: Int
-)
+) : Serializable, Comparable<AppStatisticsWeeklyReport> {
+    override fun compareTo(other: AppStatisticsWeeklyReport) : Int = when (year) {
+        other.year -> weekNum - other.weekNum
+        else -> year - other.year
+    }
+}
+
 
 
 interface AppStatisticsReporterService {
@@ -28,6 +38,8 @@ class AppStatisticsReporterNaiveImpl: AppStatisticsReporterService {
     @Autowired
     lateinit var repository: AppStatisticsRepo
 
+
+    @Cacheable("weeklyappstatistics")
     override fun getStats(startDate: Date, endDate: Date, type: Int) : List<AppStatisticsWeeklyReport> {
         val statistics = repository.findByTypeAndReportTimeBetween(type, startDate, endDate)
         val report = AppStatisticsReport()
@@ -40,9 +52,13 @@ class AppStatisticsReporterNaiveImpl: AppStatisticsReporterService {
     class AppStatisticsReport {
         private val _weeklyReports: MutableMap<Pair<Int, Int>, AppStatisticsWeeklyReport> = mutableMapOf()
         val weeklyReports: List<AppStatisticsWeeklyReport>
-            get() = Collections.unmodifiableList(ArrayList(_weeklyReports.values))
+            get() {
+                val reports = ArrayList(_weeklyReports.values)
+                reports.sort()
+                return Collections.unmodifiableList(reports)
+            }
 
-        fun addStatistics(appStats: AppStatistics) : Unit {
+        fun addStatistics(appStats: AppStatistics): Unit {
 
             val persianCalDate = gregorianToPersian(appStats.reportTime)
             val persianYear = persianCalDate.get(Calendar.YEAR_WOY)
