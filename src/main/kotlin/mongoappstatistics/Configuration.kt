@@ -11,11 +11,15 @@ import org.springframework.data.redis.connection.RedisConnectionFactory
 import java.time.Duration
 
 
-
 @Configuration
 @Profile("cache")
 @EnableCaching
 class RedisCacheConfigurer: CachingConfigurerSupport() {
+
+    /**
+     * TTL Configurer for Redis cache
+     */
+
     @Value("${'$'}{redis.cache.ttl:1200}")
     private lateinit var _redisCacheTtl: String
 

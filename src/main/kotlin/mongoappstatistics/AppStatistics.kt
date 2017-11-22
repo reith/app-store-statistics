@@ -4,9 +4,12 @@ import java.util.*
 import org.springframework.data.annotation.*
 
 
-// TODO: it said to make properties private
-
 data class AppStatistics(
+        /**
+         * Some info about application
+         *
+         * @param reportTime: report time in gregorian calendar
+         */
         val reportTime: Date,
         val type: Int,
         val videoRequests: Int,
