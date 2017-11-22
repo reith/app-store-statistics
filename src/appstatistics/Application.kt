@@ -6,8 +6,10 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Profile
 import java.sql.Date
 import java.time.LocalDate
+
 
 @SpringBootApplication
 class Application {
@@ -30,7 +32,10 @@ class Application {
 
 }
 
+
+/*
 fun main(args: Array<String>) {
     println("Starting appstatistics.AppStatistics")
     SpringApplication.run(Application::class.java, *args)
 }
+*/
